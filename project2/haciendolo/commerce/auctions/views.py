@@ -65,3 +65,16 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+
+def Categories(request):
+    Categories=Category.objects.all()
+    return render(request,"auctions/category.html",({
+        "categories":Categories
+    }))
+
+def CategoriesListing(request,category):
+    Listings=Listing.objects.filter(Category__Category=category,Active=True)
+
+    return render(request,"auctions/categoryListing.html",({
+        "Listings":Listings
+    }))

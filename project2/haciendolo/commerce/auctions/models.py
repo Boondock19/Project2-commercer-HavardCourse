@@ -17,7 +17,7 @@ class Listing(models.Model):
     Description=models.CharField(max_length=200)
     Starting_Bid=models.FloatField()
     Price=models.FloatField(blank=True,null=True,default=None)
-    Url_img=models.URLField(blank=True)
+    Url_img=models.URLField(blank=True,default="https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png")
     Active=models.BooleanField(default=True)
     Category=models.ForeignKey(Category,on_delete=models.CASCADE,related_name="Categories")
     
