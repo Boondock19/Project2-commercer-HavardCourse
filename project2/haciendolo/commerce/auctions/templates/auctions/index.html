@@ -4,7 +4,7 @@
     <h2>Active Listings</h2>
     {% for Listing in Listings %}
         <ul>
-            <a href="">
+            <a href="{% url 'ListingPage' Listing.pk %}">
                 <li>Title: {{Listing.Title}}, 
                     Description: {{Listing.Description}},
                     Current Price: {{Listing.Starting_Bid}},

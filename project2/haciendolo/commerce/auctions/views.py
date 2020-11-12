@@ -78,3 +78,11 @@ def CategoriesListing(request,category):
     return render(request,"auctions/categoryListing.html",({
         "Listings":Listings
     }))
+
+def ListingPage(request,pk):
+    Listings=Listing.objects.all()
+    ListingTarget=Listings.filter(id=pk)
+    ListingWanted=ListingTarget[0]
+    #return print(ListingTarget[0].Title)
+    context=({"Listing":ListingWanted})
+    return render(request,"auctions/ListingPage.html",context)
