@@ -24,6 +24,15 @@ class Listing(models.Model):
     def __str__(self):
         return f"This is the listing title : {self.Title} created by {self.User}"
 
+class Bid(models.Model):
+    User=models.ForeignKey(User,on_delete=models.CASCADE)
+    Listing=models.ForeignKey(Listing,on_delete=models.CASCADE)
+    bid_amount=models.FloatField()
+
+    def __str__(self):
+        return f"This is the bid of the user {self.User} and the bid is {self.bid_amount}"
+
+
 class Comment(models.Model):
     Listing=models.ForeignKey(Listing,on_delete=models.CASCADE,related_name="Listing_Comments")
     User=models.ForeignKey(User,on_delete=models.CASCADE,related_name="User_Comments")
@@ -32,6 +41,10 @@ class Comment(models.Model):
     def __str__(self):
         return f"This is the comments of the user {self.User} in the Listing {self.Listing}"
 
-class WathList(models.Model):
-    pass
+class WatchList(models.Model):
+    User=models.ForeignKey(User,on_delete=models.CASCADE,related_name="User_WatchList",blank=True,default=None)
+    Listing=models.ManyToManyField(Listing,related_name="Listing_WatchList",blank=True)
+    
 
+    def __str__(self):
+        return f"This is the watchlist of the user {self.User}"

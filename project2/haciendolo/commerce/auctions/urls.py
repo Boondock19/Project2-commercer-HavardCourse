@@ -10,4 +10,5 @@ urlpatterns = [
     path("CategoryList",views.Categories,name="Categories"),
     path("Category/<str:category>",views.CategoriesListing,name="CategoriesListing"),
     path("ListingPage/<int:pk>",views.ListingPage,name="ListingPage"),
+    path("WatchList",views.WatchListPage,name="WatchList"),
 ]

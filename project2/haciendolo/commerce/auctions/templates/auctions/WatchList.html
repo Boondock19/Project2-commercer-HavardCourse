@@ -1,0 +1,12 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    {% for Listing in Listings %}
+    <ul>
+        <li><a href="{% url 'ListingPage' Listing.pk%}">Title: {{Listing.Title}}, 
+            Description: {{Listing.Description}},
+            Current Price: {{Listing.Starting_Bid}},
+            <img src="{{Listing.Url_img}}" alt="Image" width="120" height="100"> </li></a>
+    </ul>
+    {% endfor %}
+{% endblock %}

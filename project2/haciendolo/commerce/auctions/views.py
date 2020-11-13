@@ -79,6 +79,18 @@ def CategoriesListing(request,category):
         "Listings":Listings
     }))
 
+def WatchListPage(request):
+    user_target=User.objects.get(username=request.user)
+    try:
+        watchlist_target=WatchList.objects.get(User=user_target)
+    except (UnboundLocalError, WatchList.DoesNotExist):
+        watchlist_target=WatchList()
+        watchlist_target.User=user_target
+        watchlist_target.save()
+    
+    context=({"Listings": watchlist_target.Listing.all()})
+    return render(request,"auctions/WatchList.html",context)
+
 def ListingPage(request,pk):
     Listings=Listing.objects.all()
     ListingTarget=Listings.filter(id=pk)
@@ -86,3 +98,5 @@ def ListingPage(request,pk):
     #return print(ListingTarget[0].Title)
     context=({"Listing":ListingWanted})
     return render(request,"auctions/ListingPage.html",context)
+
+
