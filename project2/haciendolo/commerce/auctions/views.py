@@ -91,6 +91,28 @@ def WatchListPage(request):
     context=({"Listings": watchlist_target.Listing.all()})
     return render(request,"auctions/WatchList.html",context)
 
+def CreateListingPage(request):
+    ListofListings=Listing.objects.all()
+    if request.method=="POST":
+        ListingCreated=Listing()
+        ListingCreated.User=request.user
+        ListingCreated.Title=request.POST["title"]
+        ListingCreated.Description=request.POST["description"]
+        ListingCreated.Starting_Bid=request.POST["startingbid"]
+        ListingCreated.Category=Category.objects.get(Category=request.POST["category"])
+        if request.POST["imgurl"]=="":
+            ListingCreated.Url_img="https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png"
+        #if ListingCreated.Title in
+        else: 
+            ListingCreated.Url_img=request.POST["imgurl"] 
+        ListingCreated.save()
+        return HttpResponseRedirect(reverse("index"))
+    
+    else:
+        Categories=Category.objects.all()
+        context=({"Categories":Categories})
+        return render(request,"auctions/CreateListingPage.html",context)
+
 def ListingPage(request,pk):
     Listings=Listing.objects.all()
     ListingTarget=Listings.filter(id=pk)
