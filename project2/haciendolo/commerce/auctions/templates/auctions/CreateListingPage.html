@@ -2,17 +2,33 @@
 
 
 {% block body %}
-   
+   {% if message %}
+   <div>
+       <h3>{{message}}</h3>
+   </div>
+   {% endif %}
     <form action="{% url 'CreateListingPage' %}" method="post" id="Listingform">
         {% csrf_token %}
         <div class="form-group">
-            <input class="form-control" autofocus type="text" name="title" placeholder="Title" required>
+            {% if Title %}
+                <input class="form-control" autofocus type="text" name="title" placeholder="Title" value="{{Title}}" required>
+            {% else %}
+                <input class="form-control" autofocus type="text" name="title" placeholder="Title"  required>
+            {% endif %}
         </div>
         <div class="form-group">
-           <textarea name="description" form="Listingform" class="" required></textarea>
+            {% if Description %}
+                <textarea name="description" form="Listingform" class=""  required>{{Description}}</textarea>
+            {% else %}
+                <textarea name="description" form="Listingform" class=""  required></textarea>
+            {% endif %}
         </div>
         <div class="form-group">
-            <input class="form-control" type="number" name="startingbid" placeholder="Starting Bid" required>
+            {% if StartingBid %}
+                <input class="form-control" type="number" name="startingbid" placeholder="Starting Bid"  value="{{StartingBid}}" required>
+            {% else %}
+                <input class="form-control" type="number" name="startingbid" placeholder="Starting Bid"  required>
+            {% endif %}
         </div>
         <div class="form-group">
             <select name="category" required>

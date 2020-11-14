@@ -93,6 +93,8 @@ def WatchListPage(request):
 
 def CreateListingPage(request):
     ListofListings=Listing.objects.all()
+    Categories=Category.objects.all()
+    message=""
     if request.method=="POST":
         ListingCreated=Listing()
         ListingCreated.User=request.user
@@ -105,11 +107,25 @@ def CreateListingPage(request):
         #if ListingCreated.Title in
         else: 
             ListingCreated.Url_img=request.POST["imgurl"] 
+        
+        for e in ListofListings:
+            if ListingCreated.Title==e.Title:
+                message="This Listing already exist"
+                break
+        if message != "":
+            context=({"message":message,"Title":ListingCreated.Title,
+            "Description":ListingCreated.Description,"StartingBid":ListingCreated.Starting_Bid,
+            "Categories":Categories })
+            
+            return render(request,"auctions/CreateListingPage.html",context)
+        
         ListingCreated.save()
+        
+        
         return HttpResponseRedirect(reverse("index"))
     
     else:
-        Categories=Category.objects.all()
+        
         context=({"Categories":Categories})
         return render(request,"auctions/CreateListingPage.html",context)
 
