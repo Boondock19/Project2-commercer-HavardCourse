@@ -4,6 +4,24 @@
 {% block body %}
     
     <h1>{{Listing.Title}} </h1>
-
-    
+    <div>
+        <img src="{{Listing.Url_img}}" alt="Image" width="200" height="250">
+    </div>
+    <hr>
+    <p>{{Listing.Description}}</p>
+    <hr>
+    <h4>Category</h4>
+    <p>{{}}</p>
+    <hr>
+    <div>
+        Current Price: {{Listing.Price}}
+    </div>
+    <div>
+        <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
+            
+            <input type="number" name="Bid" placeholder="New Bid">
+            <input class="" type="submit" value="Biding">
+            <input type="button" class="btn btn-danger" name="Close" value="Close Bid">
+        </form>
+    </div>
 {% endblock %}
