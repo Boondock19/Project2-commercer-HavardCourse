@@ -11,17 +11,31 @@
     <p>{{Listing.Description}}</p>
     <hr>
     <h4>Category</h4>
-    <p>{{}}</p>
+    <p>{{Listing.Category}}</p>
     <hr>
     <div>
         Current Price: {{Listing.Price}}
     </div>
-    <div>
-        <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
-            
-            <input type="number" name="Bid" placeholder="New Bid">
-            <input class="" type="submit" value="Biding">
-            <input type="button" class="btn btn-danger" name="Close" value="Close Bid">
-        </form>
-    </div>
+    {% if owned is False %}
+        <div>
+            <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
+                {% csrf_token %} 
+                <input type="number" name="Bid" placeholder="New Bid">
+                <input class="" type="submit" value="Biding">
+                
+            </form>
+        </div>
+    {% else %}
+        {% if Listing.Active is True %}        
+            <div>
+                <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit" name="Close">Close Listing</button>
+                </form>
+            </div>
+        {% else %}
+            <H5>This listing is Closed</H5>
+        {% endif %}    
+
+    {% endif %}
 {% endblock %}

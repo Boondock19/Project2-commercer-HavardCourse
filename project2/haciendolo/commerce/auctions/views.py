@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse
 
 from .models import *
@@ -130,12 +130,43 @@ def CreateListingPage(request):
         return render(request,"auctions/CreateListingPage.html",context)
 
 def ListingPage(request,pk):
+    user=request.user
     Listings=Listing.objects.all()
     ListingTarget=Listings.filter(id=pk)
     ListingWanted=ListingTarget[0]
+    owned=Owner(user,ListingWanted)
     ListingWanted.Price=ListingWanted.Starting_Bid
-    #return print(ListingTarget[0].Title)
-    context=({"Listing":ListingWanted})
-    return render(request,"auctions/ListingPage.html",context)
+    
+    if request.method == "POST" :
+        if "Close" in request.POST:
+            CloseListing(ListingWanted)
+            return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+
+    else:
+        context=({"Listing":ListingWanted,"owned":owned })
+        return render(request,"auctions/ListingPage.html",context)
 
 
+def Owner(user,Listing_obj):
+    ListingTarget=Listing.objects.get(pk=Listing_obj.id)
+    if user==ListingTarget.User:
+        return True
+    else:
+        return False
+
+def CloseListing(Listing_obj):
+    ListingTarget=Listing.objects.get(pk=Listing_obj.id)
+    ListingTarget.Active=False
+    ListingTarget.save()
+
+def NewBid(bid,user,Listing_obj):
+    ListingTarget=Listing.objects.get(pk=Listing_obj.id)
+    if bid > ListingTarget.Price:
+        NewestBid=Bid()
+        NewestBid.User=user
+        NewestBid.bid_amount=bid
+        NewestBid.Listing=ListingTarget
+        NewestBid.save()
+        return "saved"
+    else:
+        return "not saved"
