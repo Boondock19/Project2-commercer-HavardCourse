@@ -7,7 +7,7 @@
             <a href="{% url 'ListingPage' Listing.pk %}">
                 <li>Title: {{Listing.Title}}, 
                     Description: {{Listing.Description}},
-                    Current Price: {{Listing.Starting_Bid}},
+                    Current Price: {{Listing.Price}},
                     <img src="{{Listing.Url_img}}" alt="Image" width="120" height="100"> </li>
             </a>
         </ul>

@@ -20,10 +20,29 @@
         <div>
             <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
                 {% csrf_token %} 
-                <input type="number" name="Bid" placeholder="New Bid">
+                <input type="number" name="New_Bid" placeholder="New Bid">
                 <input class="" type="submit" value="Biding">
                 
             </form>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if message.extra_tags == 'bid_error' %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
+            
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if message.extra_tags == 'bid_message' %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
         </div>
     {% else %}
         {% if Listing.Active is True %}        

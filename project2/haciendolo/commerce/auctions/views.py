@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
+from django.contrib import messages
 
 from .models import *
 
@@ -102,6 +103,7 @@ def CreateListingPage(request):
         ListingCreated.Description=request.POST["description"]
         ListingCreated.Starting_Bid=request.POST["startingbid"]
         ListingCreated.Category=Category.objects.get(Category=request.POST["category"])
+        ListingCreated.Price=ListingCreated.Starting_Bid
         if request.POST["imgurl"]=="":
             ListingCreated.Url_img="https://bitsofco.de/content/images/2018/12/Screenshot-2018-12-16-at-21.06.29.png"
         #if ListingCreated.Title in
@@ -135,13 +137,29 @@ def ListingPage(request,pk):
     ListingTarget=Listings.filter(id=pk)
     ListingWanted=ListingTarget[0]
     owned=Owner(user,ListingWanted)
-    ListingWanted.Price=ListingWanted.Starting_Bid
+    Bid_saved=41
     
     if request.method == "POST" :
         if "Close" in request.POST:
             CloseListing(ListingWanted)
             return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
 
+        if "New_Bid" in request.POST:
+            if request.POST["New_Bid"]=="":
+                messages.add_message(request, messages.ERROR, "Please enter a bid", extra_tags="bid_error")
+                
+                return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+            else:
+                New_Bid=int(request.POST["New_Bid"])
+                
+                
+                if NewBid(New_Bid,user,ListingWanted) == True:
+                    messages.add_message(request, messages.SUCCESS , "Your bid was save succesfully" , extra_tags="bid_message")
+                    return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+                    
+                else:
+                    messages.add_message(request, messages.ERROR, "Your bid should be higher than the actual price" , extra_tags="bid_message")
+                    return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
     else:
         context=({"Listing":ListingWanted,"owned":owned })
         return render(request,"auctions/ListingPage.html",context)
@@ -167,6 +185,8 @@ def NewBid(bid,user,Listing_obj):
         NewestBid.bid_amount=bid
         NewestBid.Listing=ListingTarget
         NewestBid.save()
-        return "saved"
+        Listing_obj.Price=NewestBid.bid_amount
+        Listing_obj.save()
+        return True
     else:
-        return "not saved"
+        return False
