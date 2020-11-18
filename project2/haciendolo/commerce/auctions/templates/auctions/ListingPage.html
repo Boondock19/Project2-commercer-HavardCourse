@@ -57,4 +57,28 @@
         {% endif %}    
 
     {% endif %}
+
+    <div>
+        <hr>
+
+        <H5>Comment Seccion</H5>
+        <div>
+            <form action="{% url 'ListingPage' Listing.pk %}" method="post" id="comment_form">
+                {% csrf_token %}
+                <textarea name="comment" form="comment_form" rows="3" cols="50" ></textarea>
+                <input type="submit" class="btn btn-primary" value="Comment out">
+            </form>
+        </div>
+        <div>
+            {% for Comment in Comments %}
+            <div>
+                <p>
+                    <h6 class=" ">{{Comment.User}}</h6>
+
+                    {{Comment.Contend|safe}}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 {% endblock %}

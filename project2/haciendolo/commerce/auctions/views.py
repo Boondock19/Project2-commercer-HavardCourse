@@ -137,7 +137,7 @@ def ListingPage(request,pk):
     ListingTarget=Listings.filter(id=pk)
     ListingWanted=ListingTarget[0]
     owned=Owner(user,ListingWanted)
-    Bid_saved=41
+    Comments=Comment.objects.filter(Listing=ListingWanted.id)
     
     if request.method == "POST" :
         if "Close" in request.POST:
@@ -160,8 +160,16 @@ def ListingPage(request,pk):
                 else:
                     messages.add_message(request, messages.ERROR, "Your bid should be higher than the actual price" , extra_tags="bid_message")
                     return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+        if "comment" in request.POST:
+            if request.POST["comment"]=="":
+                messages.add_message(request,messages.ERROR,"You need to enter some text",extra_tags="comment_error")
+                return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+            else:
+             CommentContend=request.POST["comment"]
+             NewComment(ListingWanted,user,CommentContend)
+             return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))   
     else:
-        context=({"Listing":ListingWanted,"owned":owned })
+        context=({"Listing":ListingWanted,"owned":owned,"Comments": Comments })
         return render(request,"auctions/ListingPage.html",context)
 
 
@@ -190,3 +198,13 @@ def NewBid(bid,user,Listing_obj):
         return True
     else:
         return False
+
+def NewComment(Listing_obj,user,comment):
+     ListingTarget=Listing.objects.get(pk=Listing_obj.id)
+     newcomment=Comment()
+     newcomment.Listing=ListingTarget
+     newcomment.User=user
+     newcomment.Contend=comment
+     newcomment.save()
+     return newcomment   
+
