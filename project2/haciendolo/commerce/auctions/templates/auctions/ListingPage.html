@@ -63,6 +63,15 @@
 
         <H5>Comment Seccion</H5>
         <div>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    {% if message.extra_tags == 'comment_error' %}
+                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            {% endif %}
             <form action="{% url 'ListingPage' Listing.pk %}" method="post" id="comment_form">
                 {% csrf_token %}
                 <textarea name="comment" form="comment_form" rows="3" cols="50" ></textarea>
@@ -73,7 +82,7 @@
             {% for Comment in Comments %}
             <div>
                 <p>
-                    <h6 class=" ">{{Comment.User}}</h6>
+                    <h6 class="font-weight-bold">{{Comment.User}}</h6>
 
                     {{Comment.Contend|safe}}
                 </p>
