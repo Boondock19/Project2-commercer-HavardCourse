@@ -137,14 +137,13 @@ def ListingPage(request,pk):
     ListingTarget=Listings.filter(id=pk)
     ListingWanted=ListingTarget[0]
     owned=Owner(user,ListingWanted)
+    Winner=None
     Comments=Comment.objects.filter(Listing=ListingWanted.id)
     
     if request.method == "POST" :
         if "Close" in request.POST:
             CloseListing(ListingWanted)
-            Winner=GetWinner(ListingWanted)
-            context=({"Listing":ListingWanted,"owned":owned,"Comments": Comments ,"Winner": Winner })
-            return render(request,"auctions/ListingPage.html",context)
+            return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
 
         if "New_Bid" in request.POST:
             if request.POST["New_Bid"]=="":
@@ -175,8 +174,14 @@ def ListingPage(request,pk):
             Watched(ListingWanted,user)
             return HttpResponseRedirect(reverse("WatchList"))
 
+
+     
+
     else:
-        context=({"Listing":ListingWanted,"owned":owned,"Comments": Comments })
+        if  ListingWanted.Active==False:
+            Winner=GetWinner(ListingWanted)
+        
+        context=({"Listing":ListingWanted,"owned":owned,"Comments": Comments,"Winner": Winner })
         return render(request,"auctions/ListingPage.html",context)
 
 
@@ -218,7 +223,8 @@ def NewComment(Listing_obj,user,comment):
 def GetWinner(Listing_obj):
     Bids=Bid.objects.filter(Listing=Listing_obj.id)
     WinningBid=Bids.last()
-    return WinningBid
+    WinnerUser=WinningBid.User
+    return WinnerUser
 
 def Watched(Listing_obj,user):
     ListingTarget=Listing.objects.get(pk=Listing_obj.id)

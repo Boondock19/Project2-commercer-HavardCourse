@@ -16,60 +16,73 @@
     <div>
         Current Price: {{Listing.Price}}
     </div>
-    {% if owned is False and user.is_authenticated %}
-        <div>
-            <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
-                {% csrf_token %}
-                <button class="btn btn-danger" type="submit" name="wacthlist">Add/Remove from WacthList</button>
-            </form>
-        </div>
-    
-        <div>
-            <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
-                {% csrf_token %} 
-                <input type="number" name="New_Bid" placeholder="New Bid">
-                <input class="" type="submit" value="Biding">
-                
-            </form>
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    {% if message.extra_tags == 'bid_error' %}
-                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-            {% endif %}
-            
-            {% if messages %}
-            <ul class="messages">
-                {% for message in messages %}
-                    {% if message.extra_tags == 'bid_message' %}
-                        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-            {% endif %}
-        </div>
-    {% else %}
-        {% if Listing.Active is True and user.is_authenticated %}        
+    {% if owned is False %}
+        {% if user.is_authenticated %}    
+           
             <div>
                 <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
                     {% csrf_token %}
-                    <button class="btn btn-danger" type="submit" name="Close">Close Listing</button>
+                    <button class="btn btn-danger" type="submit" name="wacthlist">Add/Remove from WacthList</button>
                 </form>
             </div>
-        {% endif %}
-        {% if Listing.Active is False %}   
-            <H5>This listing is Closed</H5>
-            {% if Winner.User == request.user and user.is_authenticated %}
-                <div>   
-                    <h4>YOU WON THE AUCTION</h4>
-                </div>     
+            {% if Listing.Active is True %}
+                <div>
+                    <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
+                        {% csrf_token %} 
+                        <input type="number" name="New_Bid" placeholder="New Bid">
+                        <input class="" type="submit" value="Biding">
+                        
+                    </form>
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            {% if message.extra_tags == 'bid_error' %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    
+                    {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            {% if message.extra_tags == 'bid_message' %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
             {% endif %}
+        {% endif %}     
+    {% else %}
+        {% if Listing.Active is True  %}        
+                {% if user.is_authenticated and owned is True %}    
+                    <div>
+                        <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button class="btn btn-danger" type="submit" name="Close">Close Listing</button>
+                        </form>
+                    </div>
+                {% endif %}
+        {% endif %}
+            
 
-        {% endif %}    
-
+    {% endif %}    
+    
+    {% if Listing.Active is False %}
+        <H5>This listing is Closed</H5>
+        {%  if user.is_authenticated %}
+                {% if Winner == request.user %}
+                    <div>
+                        <h4>YOU WON THE AUCTION</h4>
+                    </div>
+                {% else %}
+                    <div>   
+                    <h4> {{Winner}} WON THE AUCTION</h4>
+                </div>
+                {% endif %}     
+        {% endif %}
     {% endif %}
 
     <div>
