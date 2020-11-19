@@ -142,7 +142,9 @@ def ListingPage(request,pk):
     if request.method == "POST" :
         if "Close" in request.POST:
             CloseListing(ListingWanted)
-            return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+            Winner=GetWinner(ListingWanted)
+            context=({"Listing":ListingWanted,"owned":owned,"Comments": Comments ,"Winner": Winner })
+            return render(request,"auctions/ListingPage.html",context)
 
         if "New_Bid" in request.POST:
             if request.POST["New_Bid"]=="":
@@ -167,7 +169,12 @@ def ListingPage(request,pk):
             else:
              CommentContend=request.POST["comment"]
              NewComment(ListingWanted,user,CommentContend)
-             return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))   
+             return HttpResponseRedirect(reverse("ListingPage",kwargs={'pk': ListingWanted.id }))
+        
+        if "wacthlist" in request.POST:
+            Watched(ListingWanted,user)
+            return HttpResponseRedirect(reverse("WatchList"))
+
     else:
         context=({"Listing":ListingWanted,"owned":owned,"Comments": Comments })
         return render(request,"auctions/ListingPage.html",context)
@@ -208,3 +215,26 @@ def NewComment(Listing_obj,user,comment):
      newcomment.save()
      return newcomment   
 
+def GetWinner(Listing_obj):
+    Bids=Bid.objects.filter(Listing=Listing_obj.id)
+    WinningBid=Bids.last()
+    return WinningBid
+
+def Watched(Listing_obj,user):
+    ListingTarget=Listing.objects.get(pk=Listing_obj.id)
+    try:
+        watchlist_target=WatchList.objects.get(User=user)
+    except (UnboundLocalError, WatchList.DoesNotExist):
+        watchlist_target=WatchList()
+        watchlist_target.User=user_target
+        watchlist_target.save()
+
+    ListingWatched=WatchList.objects.get(User=user)
+    Listings=ListingWatched.Listing.all()
+    if ListingTarget in Listings:
+        ListingWatched.Listing.remove(ListingTarget)
+    else:
+        ListingWatched.Listing.add(ListingTarget)
+
+
+        

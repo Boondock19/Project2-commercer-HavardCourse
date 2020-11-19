@@ -16,7 +16,14 @@
     <div>
         Current Price: {{Listing.Price}}
     </div>
-    {% if owned is False %}
+    {% if owned is False and user.is_authenticated %}
+        <div>
+            <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
+                {% csrf_token %}
+                <button class="btn btn-danger" type="submit" name="wacthlist">Add/Remove from WacthList</button>
+            </form>
+        </div>
+    
         <div>
             <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
                 {% csrf_token %} 
@@ -45,15 +52,22 @@
             {% endif %}
         </div>
     {% else %}
-        {% if Listing.Active is True %}        
+        {% if Listing.Active is True and user.is_authenticated %}        
             <div>
                 <form action="{% url 'ListingPage' Listing.pk %}" method="POST">
                     {% csrf_token %}
                     <button class="btn btn-danger" type="submit" name="Close">Close Listing</button>
                 </form>
             </div>
-        {% else %}
+        {% endif %}
+        {% if Listing.Active is False %}   
             <H5>This listing is Closed</H5>
+            {% if Winner.User == request.user and user.is_authenticated %}
+                <div>   
+                    <h4>YOU WON THE AUCTION</h4>
+                </div>     
+            {% endif %}
+
         {% endif %}    
 
     {% endif %}
@@ -72,11 +86,13 @@
                 {% endfor %}
             </ul>
             {% endif %}
-            <form action="{% url 'ListingPage' Listing.pk %}" method="post" id="comment_form">
-                {% csrf_token %}
-                <textarea name="comment" form="comment_form" rows="3" cols="50" ></textarea>
-                <input type="submit" class="btn btn-primary" value="Comment out">
-            </form>
+            {% if user.is_authenticated %}
+                <form action="{% url 'ListingPage' Listing.pk %}" method="post" id="comment_form">
+                    {% csrf_token %}
+                    <textarea name="comment" form="comment_form" rows="3" cols="50" ></textarea>
+                    <input type="submit" class="btn btn-primary" value="Comment out">
+                </form>
+            {% endif %}
         </div>
         <div>
             {% for Comment in Comments %}
