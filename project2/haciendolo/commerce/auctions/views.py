@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
-
+from django.contrib.auth.decorators import login_required
 from .models import *
 
 
@@ -80,6 +80,7 @@ def CategoriesListing(request,category):
         "Listings":Listings
     }))
 
+@login_required(login_url='login')
 def WatchListPage(request):
     user_target=User.objects.get(username=request.user)
     try:
@@ -92,6 +93,7 @@ def WatchListPage(request):
     context=({"Listings": watchlist_target.Listing.all()})
     return render(request,"auctions/WatchList.html",context)
 
+@login_required(login_url='login')
 def CreateListingPage(request):
     ListofListings=Listing.objects.all()
     Categories=Category.objects.all()
